@@ -18,7 +18,6 @@ namespace DemoCifradoRSA
         {
             cert = SelectCertManual();
 
-
             string texto = "demostracion de cifrado con llave publica.!!";
             string Texto_Codificado;
             Texto_Codificado = Cifrar(texto);
@@ -28,6 +27,9 @@ namespace DemoCifradoRSA
             Console.WriteLine("Texto cifrado: {0}", Texto_Codificado);
             Console.WriteLine("");
             Console.WriteLine("Texto descifrado: {0}", DesCifrar(Texto_Codificado));
+
+            Sign();
+
             Console.ReadKey();
         }
 
@@ -39,6 +41,7 @@ namespace DemoCifradoRSA
         public static string Cifrar(string plainText)
         {
             RSACryptoServiceProvider publicKey = (RSACryptoServiceProvider)cert.PublicKey.Key;
+            //RSACryptoServiceProvider publicKey = (RSACryptoServiceProvider)cert.PrivateKey;
             byte[] plainBytes = Encoding.UTF8.GetBytes(plainText);
             byte[] enc = publicKey.Encrypt(plainBytes, false);
             return Convert.ToBase64String(enc);
@@ -52,9 +55,9 @@ namespace DemoCifradoRSA
         public static string DesCifrar(string encryptedText)
         {
             RSACryptoServiceProvider privateKey = (RSACryptoServiceProvider)cert.PrivateKey;
+            //RSACryptoServiceProvider privateKey = (RSACryptoServiceProvider)cert.PublicKey.Key;
             byte[] encryptedBytes = Convert.FromBase64String(encryptedText);
             byte[] des = privateKey.Decrypt(encryptedBytes, false);
-
             return Encoding.UTF8.GetString(des);
         }
 
@@ -88,6 +91,17 @@ namespace DemoCifradoRSA
             {
                 throw new Exception("ERROR: " + ex);
             }
+        }
+
+        public static void Sign()
+        {
+            byte[] data = Encoding.UTF8.GetBytes("demostracion de cifrado con llave publica.!!");
+
+            RSA rsa = cert.GetRSAPrivateKey();            
+            byte[] sign = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            Console.WriteLine("Sign: " + Convert.ToBase64String(sign));
+            bool verify = rsa.VerifyData(data, sign, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            Console.WriteLine("Verify: " + verify);
         }
     }
 }
