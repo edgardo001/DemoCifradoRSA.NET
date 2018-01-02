@@ -97,6 +97,7 @@ namespace DemoCifradoRSA
         {
             byte[] data = Encoding.UTF8.GetBytes("demostracion de cifrado con llave publica.!!");
 
+            //Metodos validos para .net 4.6 y superior
             RSA rsa = cert.GetRSAPrivateKey();            
             byte[] sign = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             Console.WriteLine("Sign: " + Convert.ToBase64String(sign));
